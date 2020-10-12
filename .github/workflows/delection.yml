@@ -2,7 +2,7 @@ name: Remove Test Environment
 on:
   pull_request:
     branches:
-      - master
+      - main
     types: [closed]
 jobs:
   delete-infra:
@@ -13,9 +13,12 @@ jobs:
       AWS_REGION: 'us-east-1'
     steps:
       - uses: actions/checkout@master
-      - run: echo "::set-env name=BRANCH_NAME::${{ github.head_ref }}"
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - run: terraform init
-      - run: terraform workspace select $BRANCH_NAME
-      - run: terraform destroy -var="branch_name=$BRANCH_NAME" -auto-approve
-      - run: terraform workspace select default
-      - run: terraform workspace delete $BRANCH_NAME
+      - run: terraform destroy -var="branch=$BRANCH_NAME" -auto-approve
