@@ -123,27 +123,13 @@ jobs:
 
 
 
-    - name: Terraform validation
-      env:
-        APP_NAME: .daytoday.io
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        TF_VAR_name: ${{ steps.get_version.outputs.VERSION }}
-        TF_VAR_branch: ${{ steps.get_version.outputs.VERSION }}
-        TF_VAR_elastic_beanstalk_environment_name: ${{ steps.get_version.outputs.VERSION }}
-        TF_VAR_dns_subdomain: ${{ steps.get_version.outputs.VERSION }}${{ env.APP_NAME }}
-        
-        TF_VAR_variable_build_github_oauth_token: ${{ secrets.AWS_GIT_PARAM}}
-        TF_VAR_variable_loadbalancer_certificate_arn: ${{ secrets.AWS_LOAD_ARN}}
-        TF_VAR_variable_dns_zone_id: ${{ secrets.AWS_DNS_ID}}
-        
+    
 #         TF_VAR_variable_build_github_oauth_token: ${{ steps.git.outputs.git_param }}
 #         TF_VAR_variable_loadbalancer_certificate_arn: ${{ steps.git.outputs.load_arn }}
 #         TF_VAR_variable_dns_zone_id: ${{ steps.git.outputs.dns_id }}
 #         TF_VAR_variable_loadbalancer_certificate_arn: $(aws ssm get-parameters --with-decryption --names variable_loadbalancer_certificate_arn  --query 'Parameters[*].Value' --output text)
 #         TF_VAR_variable_dns_zone_id: $(aws ssm get-parameters --with-decryption --names variable_dns_zone_id  --query 'Parameters[*].Value' --output text)
-
-      run: terraform validate 
+ 
 
     - name: Verify Terraform version
       run: terraform --version
