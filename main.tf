@@ -8,7 +8,7 @@ resource "aws_instance" "multiple_ec2_instances" {
 
 terraform {
   backend "s3" {
-    bucket = "terraform-tf-2"
+    bucket = "day0day01"
     key = "terraform.tfstate"
     region = "us-east-1"
   }
