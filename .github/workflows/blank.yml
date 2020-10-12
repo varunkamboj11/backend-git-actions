@@ -1,0 +1,71 @@
+name: Terraform Apply
+on:
+  push:
+    branches-ignore:
+      - '*'
+    tags:
+      - '*'
+jobs:
+  terraform_apply:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Terraform
+      env:
+        TERRAFORM_VERSION: "0.12.15"
+      run: |
+        tf_version=$TERRAFORM_VERSION
+        wget https://releases.hashicorp.com/terraform/"$tf_version"/terraform_"$tf_version"_linux_amd64.zip
+        unzip terraform_"$tf_version"_linux_amd64.zip
+        sudo mv terraform /usr/local/bin/
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+    - name: Verify Terraform version
+      run: terraform --version
+    - shell: bash
+      run: |
+        echo "$GITHUB_ACTOR"-"$GITHUB_RUN_NUMBER"
+        echo "the reference = " ${GITHUB_REF}
+        echo "try fail val = " ${GITHUB_REF##*/}
+        echo "the name = " ${{ steps.get_version.outputs.VERSION }}
+  #      echo "the failing last = " ${{ steps.ssm_para.outputs.branch }}
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      id: git
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1
+    - name: Terraform init
+      env:
+        APP_NAME: .daytoday.io
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        TF_VAR_name: ${{ steps.get_version.outputs.VERSION }}
+        TF_VAR_branch: ${{ steps.get_version.outputs.VERSION }}
+        TF_VAR_variable_build_github_oauth_token: ${{ secrets.AWS_GIT_PARAM}}
+      run: |
+        terraform init -backend-config="bucket=terra-aws-waf" -backend-config="key=${{ steps.get_version.outputs.VERSION }}-delete" -backend-config="region=ap-south-1" -backend=true -input=false
+    - name: Terraform validation
+      env:
+        APP_NAME: .daytoday.io
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        TF_VAR_name: ${{ steps.get_version.outputs.VERSION }}
+        TF_VAR_branch: ${{ steps.get_version.outputs.VERSION }}
+        TF_VAR_variable_build_github_oauth_token: ${{ secrets.AWS_GIT_PARAM}}
+      run: terraform validate
+    - name: Terraform apply
+      env:
+        APP_NAME: .daytoday.io
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        TF_VAR_name: ${{ steps.get_version.outputs.VERSION }}
+        TF_VAR_branch: ${{ steps.get_version.outputs.VERSION }}
+        TF_VAR_variable_build_github_oauth_token: ${{ secrets.AWS_GIT_PARAM}}
+      run: terraform apply -auto-approve
