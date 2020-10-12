@@ -13,5 +13,10 @@ terraform {
     region = "us-east-1"
   }
 }
+
+variable "branch_name" {
+  description = "The name of the branch that's being deployed"
+}
+
 ####
 ###
