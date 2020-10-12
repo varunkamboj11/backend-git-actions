@@ -18,4 +18,4 @@ jobs:
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - run: terraform init
-      - run: terraform destroy -var="branch=$BRANCH_NAME" -auto-approve
+      - run: terraform destroy -auto-approve
