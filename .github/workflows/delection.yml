@@ -150,7 +150,7 @@ jobs:
         echo GITHUB_REF=${GITHUB_REF}
         echo EXTRACT_GITHUB_REF=${GITHUB_REF##*/}
         echo EXTRACT_GITHUB_REF_HEADS=$(echo ${GITHUB_REF#refs/heads/})
-        key_name= ${{ github.head_ref }}
+        key_name=${{ github.head_ref }}
         sed -i "s/demo/$key_name/g" main.tf
         cat main.tf
         terraform init
