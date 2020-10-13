@@ -2,7 +2,7 @@ name: Remove Test Environment
 on:
   pull_request:
     branches:
-      - main
+      - delete
     types: [closed]
 jobs:
   terraform_apply:
