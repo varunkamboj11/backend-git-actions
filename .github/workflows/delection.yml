@@ -62,7 +62,7 @@ jobs:
 #         echo ::set-output name=load_arn::$(echo $(aws ssm get-parameters --with-decryption --names variable_loadbalancer_certificate_arn  --query 'Parameters[*].Value' --output text))
 
     
-#         echo "the oauth = " ${{ steps.git.outputs.git_param }}
+##         echo "the oauth = " ${{ steps.git.outputs.git_param }}
 #         echo "the arn = " ${{ steps.git.outputs.load_arn }}
 #         echo "the dns id = " ${{ steps.git.outputs.dns_id }}  
 #         echo "the branch is = " ${{ steps.get_version.outputs.VERSION }}
