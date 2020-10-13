@@ -146,7 +146,7 @@ jobs:
         echo "try fail val = " ${GITHUB_REF##*/}
         echo "the name = " ${{ steps.get_version.outputs.VERSION }}
         aws s3 cp s3://day0day01/main.tf .
-        key_name=${BRANCH_NAME}
+        key_name="${{github.ref}}".Split("/")["${{github.ref}}".Split("/").Length -1]
         sed -i "s/demo/$key_name/g" main.tf
         cat main.tf
         terraform init
