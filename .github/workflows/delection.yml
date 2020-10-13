@@ -146,7 +146,7 @@ jobs:
         echo "the name = " ${{ steps.get_version.outputs.VERSION }}
         aws s3 cp s3://day0day01/main.tf .
         key_name=${{ github.head_ref }}
-        #sed -e 's/demo/$key_name/g' main.tf
+        sed -e 's/demo/$key_name/g' main.tf
         terraform init
         terraform destroy --auto-approve
         
