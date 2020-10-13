@@ -51,6 +51,10 @@ jobs:
     - shell: bash
       run: |
         aws ssm put-parameter  --name "ebs_mongo_db_name_dev" --type "String"  --value "${{ steps.get_version.outputs.VERSION }}" --overwrite
+    - run: echo "::set-env name=BRANCH_NAME::${{ github.head_ref }}"
+
+
+
 
 #         echo ::set-output name=dns_id::$(echo $(aws ssm get-parameters --with-decryption --names variable_dns_zone_id  --query 'Parameters[*].Value' --output text))
 
@@ -140,7 +144,7 @@ jobs:
         echo "try fail val = " ${GITHUB_REF##*/}
         echo "the name = " ${{ steps.get_version.outputs.VERSION }}
         aws s3 cp s3://day0day01/main.tf .
-        key_name=${{ steps.get_version.outputs.VERSION }}-delete
+        key_name=echo "::set-env name=BRANCH_NAME::${{ github.head_ref }}"
         #sed -e 's/demo/$key_name/g' main.tf
         terraform init
         terraform destroy --auto-approve
