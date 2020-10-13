@@ -5,6 +5,8 @@ on:
       - '*'
     tags:
       - '*'
+    tags-ignore:
+      - 'delete-*'
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
