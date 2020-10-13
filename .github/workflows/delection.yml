@@ -147,6 +147,8 @@ jobs:
         echo "the name = " ${{ steps.get_version.outputs.VERSION }}
         aws s3 cp s3://day0day01/main.tf .
         key_name= "${{github.ref}}".Split("/")["${{github.ref}}".Split("/").Length -1]
+        $branchName = "${{github.ref}}".Split("/")["${{github.ref}}".Split("/").Length -1]
+        echo "::set-env name=CURRENT_BRANCH::$(echo $branchName)"
         sed -i "s/demo/$key_name/g" main.tf
         cat main.tf
         terraform init
