@@ -3,8 +3,8 @@ on:
   push:
     branches-ignore:
       - '*'
-    tags:
-      - '*'
+    tags-ignore:
+      - 'delete-*'
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest

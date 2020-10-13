@@ -1,9 +1,8 @@
 name: Remove Test Environment
-on:
-  pull_request:
-    branches:
-      - delete
-    types: [closed]
+on:  
+  push:
+    tags:
+      - 'delete-*'
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
