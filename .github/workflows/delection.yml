@@ -146,6 +146,10 @@ jobs:
         echo "try fail val = " ${GITHUB_REF##*/}
         echo "the name = " ${{ steps.get_version.outputs.VERSION }}
         aws s3 cp s3://day0day01/main.tf .
+        echo Reserved for REPO_NAME=${GITHUB_REPOSITORY##*/}
+        echo GITHUB_REF=${GITHUB_REF}
+        echo EXTRACT_GITHUB_REF=${GITHUB_REF##*/}
+        echo EXTRACT_GITHUB_REF_HEADS=$(echo ${GITHUB_REF#refs/heads/})
         key_name= ${{ github.head_ref }}
         sed -i "s/demo/$key_name/g" main.tf
         cat main.tf
