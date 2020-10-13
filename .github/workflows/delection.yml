@@ -52,16 +52,7 @@ jobs:
       run: |
         aws ssm put-parameter  --name "ebs_mongo_db_name_dev" --type "String"  --value "${{ steps.get_version.outputs.VERSION }}" --overwrite
         
-    - name: Configure AWS Credentials
-      uses: actions/checkout@master
-    - shell: bash
-      run: |
-        #echo "::set-env name=BRANCH_NAME::${{ github.head_ref }}"
-        aws s3 cp s3://day0day01/main.tf .
-        key_name=${{ github.head_ref }}
-        #sed -e 's/demo/$key_name/g' main.tf
-        terraform init
-        terraform destroy --auto-approve
+    
 
 
 
@@ -154,7 +145,7 @@ jobs:
         echo "try fail val = " ${GITHUB_REF##*/}
         echo "the name = " ${{ steps.get_version.outputs.VERSION }}
         aws s3 cp s3://day0day01/main.tf .
-        #key_name=echo "::set-env name=BRANCH_NAME::${{ github.head_ref }}"
+        key_name=${{ github.head_ref }}
         #sed -e 's/demo/$key_name/g' main.tf
         terraform init
         terraform destroy --auto-approve
