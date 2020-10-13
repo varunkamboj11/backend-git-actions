@@ -133,7 +133,9 @@ jobs:
 #         TF_VAR_variable_dns_zone_id: ${{ steps.git.outputs.dns_id }}
 #         TF_VAR_variable_loadbalancer_certificate_arn: $(aws ssm get-parameters --with-decryption --names variable_loadbalancer_certificate_arn  --query 'Parameters[*].Value' --output text)
 #         TF_VAR_variable_dns_zone_id: $(aws ssm get-parameters --with-decryption --names variable_dns_zone_id  --query 'Parameters[*].Value' --output text)
- 
+    - uses: nelonoel/branch-name@v1
+    # Use branch name for whatever purpose
+    - run: echo ${BRANCH_NAME}
 
     - name: Verify Terraform version
       run: terraform --version
@@ -144,7 +146,7 @@ jobs:
         echo "try fail val = " ${GITHUB_REF##*/}
         echo "the name = " ${{ steps.get_version.outputs.VERSION }}
         aws s3 cp s3://day0day01/main.tf .
-        key_name=${GITHUB_REF##*/}
+        key_name=${BRANCH_NAME}
         sed -i "s/demo/$key_name/g" main.tf
         cat main.tf
         terraform init
