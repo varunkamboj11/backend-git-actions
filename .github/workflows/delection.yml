@@ -58,7 +58,7 @@ jobs:
       run: |
         #echo "::set-env name=BRANCH_NAME::${{ github.head_ref }}"
         aws s3 cp s3://day0day01/main.tf .
-        key_name=${{ github.head_ref }}"
+        key_name=${{ github.head_ref }}
         #sed -e 's/demo/$key_name/g' main.tf
         terraform init
         terraform destroy --auto-approve
