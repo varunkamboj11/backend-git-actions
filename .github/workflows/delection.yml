@@ -1,8 +1,9 @@
-name: Remove Test Environment
-on:  
-  push:
-    tags:
-      - 'delete-*'
+name: Removing Infra
+on:
+  pull_request:
+    branches:
+      - delete
+    types: [closed]
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
@@ -26,20 +27,7 @@ jobs:
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-
-
-
-    - name: Verify Terraform version
-      run: terraform --version
-    - shell: bash
-      run: |
-        echo "$GITHUB_ACTOR"-"$GITHUB_RUN_NUMBER"
-        echo "the reference = " ${GITHUB_REF}
-        echo "try fail val = " ${GITHUB_REF##*/}
-        echo "the name = " ${{ steps.get_version.outputs.VERSION }}
-  #      echo "the failing last = " ${{ steps.ssm_para.outputs.branch }}
-    
- 
+	  
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       id: git
@@ -49,111 +37,15 @@ jobs:
         aws-region: ap-south-1
     - shell: bash
       run: |
-        aws ssm put-parameter  --name "ebs_mongo_db_name_dev" --type "String"  --value "${{ steps.get_version.outputs.VERSION }}" --overwrite
-        
-    
+        echo "Hello"
 
-
-
-
-#         echo ::set-output name=dns_id::$(echo $(aws ssm get-parameters --with-decryption --names variable_dns_zone_id  --query 'Parameters[*].Value' --output text))
-
-#         echo ::set-output name=load_arn::$(echo $(aws ssm get-parameters --with-decryption --names variable_loadbalancer_certificate_arn  --query 'Parameters[*].Value' --output text))
-
-    
-##         echo "the oauth = " ${{ steps.git.outputs.git_param }}
-#         echo "the arn = " ${{ steps.git.outputs.load_arn }}
-#         echo "the dns id = " ${{ steps.git.outputs.dns_id }}  
-#         echo "the branch is = " ${{ steps.get_version.outputs.VERSION }}
-
-      
-#         echo "##[set-output name=git_param;]::$(aws ssm get-parameters --with-decryption --names variable_build_github_oauth_token  --query 'Parameters[*].Value' --output text)"
-        
-#         echo "##[set-output name=dns_id;]::$(aws ssm get-parameters --with-decryption --names variable_dns_zone_id  --query 'Parameters[*].Value' --output text)"
-
-#         echo "##[set-output name=load_arn;]::$(aws ssm get-parameters --with-decryption --names variable_loadbalancer_certificate_arn  --query 'Parameters[*].Value' --output text)"
-        
-        
-#        echo "##[set-output name=git_param;]::$(echo {"aws ssm get-parameters --with-decryption --names variable_build_github_oauth_token  --query 'Parameters[*].Value' --output text"})"
-#        echo "##[set-output name=load_arn;]::$(echo {"aws ssm get-parameters --with-decryption --names variable_loadbalancer_certificate_arn  --query 'Parameters[*].Value' --output text"})"
-#        echo "##[set-output name=dns_id;]::$(echo {"aws ssm get-parameters --with-decryption --names variable_dns_zone_id  --query 'Parameters[*].Value' --output text"})"
-  
-#         SECRET=$1
-#         getEnvironmentVariable() {
-#           ssm_value=$(aws ssm get-parameter --name "variable_build_github_oauth_token" --with-decryption --query 'Parameter.Value' --output text)
-#           export "${SECRET}"="${ssm_value}"
-           
-           
-      
-#           }
-#         echo "${SECRET}"
-
-#         getEnvironmentVariable "TEST_SECRET_1"
-         
-         
-
-
-#        FAIL1 = "aws ssm get-parameters --with-decryption --names variable_build_github_oauth_token  --query 'Parameters[*].Value' --output text"
-#        echo "the failiure result = " ${FAIL1}
-    - name: Verify outputs
+    - name: Deletion Infra
       run: terraform --version
     - shell: bash
       run: |
-        echo "the oauth = " ${{ secrets.AWS_GIT_PARAM}}
-        echo "the arn = " ${{ secrets.AWS_LOAD_ARN}}
-        echo "the dns id = " ${{ secrets.AWS_DNS_ID}}
-        echo "the name = " ${{ steps.get_version.outputs.VERSION }}
-
-        
-        
-
-      
-    
-        
-#         TF_VAR_variable_build_github_oauth_token: ${{ secrets.GITHUB_OAUTH }}
-#         TF_VAR_variable_loadbalancer_certificate_arn: ${{ secrets.LOAD_CERT }}
-#         TF_VAR_variable_dns_zone_id: ${{ secrets.DNS_ID }}
-
-
-      
-#         TF_VAR_variable_build_github_oauth_token: $(aws ssm get-parameters --with-decryption --names variable_build_github_oauth_token  --query 'Parameters[*].Value' --output text)
-#         TF_VAR_variable_loadbalancer_certificate_arn: $(aws ssm get-parameters --with-decryption --names variable_loadbalancer_certificate_arn  --query 'Parameters[*].Value' --output text)
-#         TF_VAR_variable_dns_zone_id: $(aws ssm get-parameters --with-decryption --names variable_dns_zone_id  --query 'Parameters[*].Value' --output text)
-        
-        
-        
-      
-#       run: terraform init -input=false
-
-
-
-    
-#         TF_VAR_variable_build_github_oauth_token: ${{ steps.git.outputs.git_param }}
-#         TF_VAR_variable_loadbalancer_certificate_arn: ${{ steps.git.outputs.load_arn }}
-#         TF_VAR_variable_dns_zone_id: ${{ steps.git.outputs.dns_id }}
-#         TF_VAR_variable_loadbalancer_certificate_arn: $(aws ssm get-parameters --with-decryption --names variable_loadbalancer_certificate_arn  --query 'Parameters[*].Value' --output text)
-#         TF_VAR_variable_dns_zone_id: $(aws ssm get-parameters --with-decryption --names variable_dns_zone_id  --query 'Parameters[*].Value' --output text)
-    - uses: nelonoel/branch-name@v1
-    # Use branch name for whatever purpose
-    - run: echo ${BRANCH_NAME}
-
-    - name: Verify Terraform version
-      run: terraform --version
-    - shell: bash
-      run: |
-        echo "$GITHUB_ACTOR"-"$GITHUB_RUN_NUMBER"
-        echo "the reference = " ${GITHUB_REF}
-        echo "try fail val = " ${GITHUB_REF##*/}
-        echo "the name = " ${{ steps.get_version.outputs.VERSION }}
         aws s3 cp s3://day0day01/main.tf .
-        echo Reserved for REPO_NAME=${GITHUB_REPOSITORY##*/}
-        echo GITHUB_REF=${GITHUB_REF}
-        echo EXTRACT_GITHUB_REF=${GITHUB_REF##*/}
-        echo EXTRACT_GITHUB_REF_HEADS=$(echo ${GITHUB_REF#refs/heads/})
         key_name=${{ github.head_ref }}
         sed -i "s/demo/$key_name/g" main.tf
         cat main.tf
         terraform init
         terraform destroy --auto-approve
-        
-        
